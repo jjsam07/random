@@ -1,0 +1,8 @@
+{
+    Filter =     {
+        Bundles =         (
+            "com.gameloft.GangStarFreemium",
+            "com.gameloft.Gangstar2"
+        );
+    };
+}

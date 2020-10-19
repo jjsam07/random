@@ -1,0 +1,9 @@
+Package: memoryedit
+Name: MemoryEdit
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Edit app's own memory.
+Maintainer: JJ Sam
+Author: JJ Sam
+Section: Tweaks

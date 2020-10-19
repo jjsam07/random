@@ -1,0 +1,4 @@
+rm *.deb
+make clean
+make package
+scp *.deb root@192.168.254.135:/var/mobile

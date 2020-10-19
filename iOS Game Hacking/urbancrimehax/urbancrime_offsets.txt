@@ -1,0 +1,97 @@
+Health write: 
+Hit and run: 4A8DE2
+Bullet: 4A8BF2
+Punch: 4A8C5C
+
+d6138c8
+
+Weapon ammo:
+#R2 holds ammo
+#R6 -> R2
+1. sub_4997A8+151
+2. sub_4B2F54
+
+3.
+pistol reload 4B33CA
+shotgun reload 4B33CA
+rpg reload 4B33CA
+grenade reload 4B33CA
+
+Sub instruction: 4B2FC8
+Sub instruction: 4B2F9C
+
+Weapon mag write:
+4B1510
+RPG: 1C8054
+RPG: 273960
+#Some boolean value
+#can shoot RPG ? yes : no
+Boolean set to true: 2738C6
+Boolean set to false: 273962
+
+#molotov
+Boolean set to true: 497A6C
+Boolean set to false: 496E4C
+
+sub_48DAAC {
+48DAD4
+48DB00
+}
+sub_48DB10
+48DB50
+48DBD0
+48DADE
+}
+
+sub_4ACB54 {
+4ACDD4
+4ACDD0
+4ACCEC
+4ACE1E
+4ACD04
+4ACD42
+}
+
+sub_485424 {
+48564A
+}
+
+sub_6297E0 {
+6297EA
+}
+
+sub_4A0DC4 {
+4A0EA4
+}
+
+sub_5006F8 {
+500A2A
+}
+
+sub_273290 {
+27333A
+27337E
+}
+
+sub_2747A0 {
+274A26
+}
+
+6184.4346
+
+Car health write
+from sub_4B1338 sub_4A960C //give (punch)
+sub_4B1338+869 //take???
+sub_515038 - bullet/punch {
+51525E
+}
+
+sub_50C35C from sub_48A2F0
+
+sub_48A2F0+76B //give???
+sub_48A2F0:loc_48AB8C+1 //take???
+from sub_48A2F0 //take and sub_50C35C //run over somebody
+sub_513F4C - collision {
+5140C2
+}
+

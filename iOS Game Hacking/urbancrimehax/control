@@ -1,0 +1,9 @@
+Package: urbancrimecheats
+Name: Urban Crime Hack 1.7.1b
+Depends: mobilesubstrate
+Version: 1.7.1b
+Architecture: iphoneos-arm
+Description: Cheat for Urban Crime 1.7.1b.
+Maintainer: jjsam07
+Author: jjsam07
+Section: Tweaks

@@ -1,0 +1,1 @@
+qemu-system-mips -S -bios flash --nographic -device loader,addr=0xbfc00000 -gdb tcp::1337 -serial mon:stdio -D logfile.txt

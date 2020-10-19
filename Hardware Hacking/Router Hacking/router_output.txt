@@ -1,0 +1,36 @@
+
+
+Bootbase Version: VTC_SPI1.12 | 2010/09/09 13:41:30
+RAM: Size = 8192 Kbytes
+DRAM POST: Testing:  8192K
+OK
+Found SPI Flash 2MiB Winbond W25Q16 at 0xbfc00000
+SPI Flash Quad Enable
+Turn off Quad Mode
+
+RAS Version: W300SV2.0.1a_ZR8_PH1
+System   ID: $2.12.35.0(SREZ.E3)3.12.8.201 20110402_V004  | 2011/04/02
+
+Press any key to enter debug mode within 3 seconds.
+............................................................
+Flash data is the same!!
+Copyright (c) 2001 - 2006 ZTE CORPORATION.
+initialize ch = 0, TC2101ME, ethernet address: 4c:09:b4:a2:89:e5
+initialize ch = 1, PhyMode=9, DesiredPhyMode=9
+ethernet address: 4c:09:b4:a2:89:e5
+Wan Channel init ........ done
+Initializing ADSL F/W ........ done
+
+==>natTableMemoryInit
+<==natTableMemoryInitANNEXAL
+SAR TX priority switch Off!
+Testlab 8
+largeD flag=2 (0:maxD=64, 1:maxD=128, 2:maxD=511)
+set try multimode number to 3 (dropmode try num 3)
+SRAOFF
+Valid Loss of power OFF!
+Dyingasp OFF!
+debug           vendorclass
+input line: ipCurrent Stdio Timeout = 30 minutes
+Syncookie switch On!
+Press ENTER to continue...

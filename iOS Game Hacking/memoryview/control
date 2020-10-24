@@ -1,0 +1,10 @@
+Package: com.jj.memoryview
+Name: memoryview
+Depends: 
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome tool of some sort!!
+Maintainer: JJ Sam
+Author: JJ Sam
+Section: System
+Tag: role::hacker

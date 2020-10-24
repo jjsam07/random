@@ -344,11 +344,11 @@ int playerPrint(void *arg) {
 }
 }
 __attribute__((naked, optnone)) void playerInitHook() {
-	asm volatile("push {r0-r11, lr}");
+	asm volatile("push {r0, r2-r12, lr}");
 	asm volatile("bl _playerPrint");
-	asm volatile("mov r12, %0"::"r" (origPlayerInit));
-	asm volatile("pop {r0-r11, lr}");
-	asm volatile("bx r12");
+	asm volatile("mov r1, %0"::"r" (origPlayerInit));
+	asm volatile("pop {r0, r2-r12, lr}");
+	asm volatile("bx r1");
 }
 
 //PlayerObject + 0x58C: Health
@@ -363,5 +363,7 @@ __attribute__((naked, optnone)) void playerInitHook() {
 	memoryEditClass = [[%c(MemoryEdit) alloc] init];
 	[memoryEditClass memoryEditInit:h];
 	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj pointer @ %p\n", &PlayerObj] withTextView:textOutput];
-	detour_w((void *)0x501D25, (void *)playerInitHook);
+	detour_w((void *)0x501D24, (void *)playerInitHook);
+	//detour((void *)0x474FAE, (void *)playerInitHook);
+	
 }

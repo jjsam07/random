@@ -68,7 +68,7 @@ typedef struct {
 
 bool detour(void *src, void *dst) {
 	vm_region_basic_info_data_t info;
-mach_port_t port = mach_task_self();
+	mach_port_t port = mach_task_self();
 	unsigned int offset = (unsigned int)dst - (((unsigned int)src & 0xFFFFFFFE) + 4);
 	BL_addr addr;
 	memcpy(&addr, &offset, sizeof(BL_addr));
@@ -99,7 +99,7 @@ mach_port_t port = mach_task_self();
 
 bool detour_w(void *src, void *dst) {
 	vm_region_basic_info_data_t info;
-mach_port_t port = mach_task_self();
+	mach_port_t port = mach_task_self();
 	unsigned int offset = (unsigned int)dst - (((unsigned int)src & 0xFFFFFFFE) + 4);
 	B_W_addr addr;
 	memcpy(&addr, &offset, sizeof(B_W_addr));

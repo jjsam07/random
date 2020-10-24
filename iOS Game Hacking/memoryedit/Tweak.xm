@@ -363,5 +363,5 @@ __attribute__((naked, optnone)) void playerInitHook() {
 	memoryEditClass = [[%c(MemoryEdit) alloc] init];
 	[memoryEditClass memoryEditInit:h];
 	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj pointer @ %p\n", &PlayerObj] withTextView:textOutput];
-	detour((void *)0x474FAE, (void *)playerInitHook);
+	detour_w((void *)0x501D25, (void *)playerInitHook);
 }

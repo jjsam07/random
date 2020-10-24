@@ -42,7 +42,7 @@ NSString *binary;
 uintptr_t origPlayerInit = 0x501D29;
 uintptr_t healthWriteOrig = 0x4A89F5;
 
-PlayerObject *PlayerObj = NULL;
+PlayerObject *PlayerObj;
 vm_address_t address;
 BOOL textOutput2Visible;
 int i = 0;
@@ -339,16 +339,16 @@ extern "C" {
 int playerPrint(void *arg) {
 	call_count++;
 	if (call_count == 2) PlayerObj = (PlayerObject *)arg;
+	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj @ %p\n", arg] withTextView:textOutput];
 	return 0;
 }
 }
 __attribute__((naked, optnone)) void playerInitHook() {
-	asm volatile("push {r0, r2-r12, lr}");
+	asm volatile("push {r0-r11, lr}");
 	asm volatile("bl _playerPrint");
-	asm volatile("mov r1, %0"::"r" (origPlayerInit));
-	asm volatile("pop {r0, r2-r12, lr}");
-	asm volatile("push {r1}");
-	asm volatile("pop {pc}");
+	asm volatile("mov r12, %0"::"r" (origPlayerInit));
+	asm volatile("pop {r0-r11, lr}");
+	asm volatile("bx r12");
 }
 
 //PlayerObject + 0x58C: Health
@@ -357,10 +357,11 @@ __attribute__((naked, optnone)) void playerInitHook() {
 //PlayerObject + 0x7E8: Y-coordinate
 //PlayerObject + 0x7EC: Z-coordinate
 %ctor {
-	//detour((void *)0x474FAE, (void *)playerInitHook);
-	memoryEditClass = [[%c(MemoryEdit) alloc] init];
-	[memoryEditClass memoryEditInit:100];
-	sleep(5);
+	CGFloat h = 100;
 	binary = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"];
 	ASLRslide = getSlide([binary UTF8String]);
+	memoryEditClass = [[%c(MemoryEdit) alloc] init];
+	[memoryEditClass memoryEditInit:h];
+	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj pointer @ %p\n", &PlayerObj] withTextView:textOutput];
+	detour((void *)0x474FAE, (void *)playerInitHook);
 }

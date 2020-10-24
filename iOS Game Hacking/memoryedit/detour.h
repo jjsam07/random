@@ -92,6 +92,8 @@ bool detour(void *src, void *dst) {
 	
 	vm_protect(port, (vm_address_t)src, sizeof(final_inst), NO, VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY);
 	vm_write(port,(vm_address_t)src, (vm_address_t)&final_inst, sizeof(final_inst));
+	sys_dcache_flush(src, sizeof(final_inst));
+	sys_icache_invalidate(src, sizeof(final_inst));
 	vm_protect(port, (vm_address_t)src, sizeof(final_inst), NO, info.protection);
 
 	return TRUE;

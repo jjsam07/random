@@ -335,20 +335,30 @@ MemoryEdit *memoryEditClass;
 
 %end
 
-extern "C" {
-int playerPrint(void *arg) {
-	call_count++;
-	if (call_count == 2) PlayerObj = (PlayerObject *)arg;
-	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj @ %p\n", arg] withTextView:textOutput];
-	return 0;
-}
-}
 __attribute__((naked, optnone)) void playerInitHook() {
-	asm volatile("push {r0, r2-r12, lr}");
-	asm volatile("bl _playerPrint");
-	asm volatile("mov r1, %0"::"r" (origPlayerInit));
-	asm volatile("pop {r0, r2-r12, lr}");
+	asm volatile("push {r2}");
+	asm volatile("mov r2, 0x24f4");
+	asm volatile("add r2, pc");
+	asm volatile("ldr r1, [r2]");
+	asm volatile("add r1, r1, #1");
+	asm volatile("str r1, [r2]");
+	asm volatile("cmp r1, #2");
+	asm volatile("ittt ne");
+	asm volatile("ldr r1, [pc, #24]");
+	asm volatile("pop {r2}");
 	asm volatile("bx r1");
+	asm volatile("mov r2, 0x24e8");
+	asm volatile("add r2, pc");
+	asm volatile("str r0, [r2]");
+	asm volatile("ldr r1, [pc, #8]");
+	asm volatile("mov r2, #1");
+	asm volatile("cmp r2, #3");
+	asm volatile("pop {r2}");
+	asm volatile("bx r1");
+	asm volatile(".word 0x501D29");
+	asm volatile("nop");
+	asm volatile("nop");
+	asm volatile("nop");
 }
 
 //PlayerObject + 0x58C: Health

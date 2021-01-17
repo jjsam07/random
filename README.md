@@ -1,1 +1,3 @@
-WARNING: Dirty code ahead.
+# WARNING
+---
+Dirty code ahead.

@@ -1,0 +1,9 @@
+Package: com.yourcompany.procmem
+Name: procmem
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome tool of some sort!!
+Maintainer: jjsam07
+Author: jjsam07
+Section: System
+Tag: role::hacker

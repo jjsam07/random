@@ -19,6 +19,7 @@ void *lr = 0;
 unsigned int currentAmmo = 0;
 unsigned int ammoIndex = 0;
 unsigned int currentCarHealth = 0;
+int callcount = 0;
 
 uintptr_t ammoData = 0x76CD5C;
 
@@ -29,6 +30,7 @@ void (*sub_513F4C)(); //car health write (collision)
 void (*sub_48A2F0)(); //collision parent 
 void (*sub_4B1338)(); //bullet/punch parent
 void (*origDamage)();
+void (*origPlayerObjectSubroutine)();
 /*
 void log_4B2F54(){ //weapon reload
 	if(r1 != 0){
@@ -236,6 +238,29 @@ void hackDamage() __attribute__ ((optnone)){
 	asm volatile("pop {r0-r11,lr}");
 	asm volatile("it eq");
 	asm volatile("mov r5, #0x7FFFFFFF");
+	asm volatile("bx r12");
+}
+
+void playerObjectSubroutineHook() __attribute__ ((optnone)){
+	asm volatile("push {r0-r11,lr}");
+	asm volatile("sub r0, r0, #4"); // Subtract 4 to get exact address.
+	asm volatile("mov r11, r0");
+	asm volatile("mov r12, %0"::"r" (origPlayerObjectSubroutine));
+	asm volatile("mov r1, %0"::"r" (&PlayerObject0));
+	asm volatile("mov r2, %0"::"r" (&PlayerObject1)); // Main PlayerObject
+	asm volatile("mov r3, %0"::"r" (&PlayerObject2));
+	asm volatile("mov r4, %0"::"r" (&callcount));
+	asm volatile("ldr r0, [r4]");
+	asm volatile("add r0, r0, #1");
+	asm volatile("str r0, [r4]");
+	asm volatile("cmp r0, #2");
+	asm volatile("it lt");
+	asm volatile("str r11, [r1]");
+	asm volatile("it eq");
+	asm volatile("str r11, [r2]");
+	asm volatile("it gt");
+	asm volatile("str r11, [r3]");
+	asm volatile("pop {r0-r11,lr}");
 	asm volatile("bx r12");
 }
 #endif

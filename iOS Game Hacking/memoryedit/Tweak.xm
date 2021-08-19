@@ -1,48 +1,24 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "memoryedit.h"
-#include "detour.h"
-
-typedef struct {
-	char padding0[0x40];	//0x0
-	float x;				//0x40
-	float y;				//0x44
-	float z;				//0x48
-} PlayerPosition;
-
-typedef struct {
-	char padding0[0x58C];
-	int health;
-} CharacterObject;
-
-typedef struct {
-	char padding0[0x14]; 		//0x0
-	PlayerPosition *position0;	//0x14
-	char padding1[0x2E0]; 		//0x18
-	PlayerPosition *position1; 	//0x2F8
-	char padding2[0x290]; 		//0x2FC
-	int maxHealth; 				//0x58C
-	int health; 				//0x590
-	char padding3[0xD4]; 		//0x594
-	CharacterObject *CharObj;	//0x668
-	char padding4[0x178];		//0x66C
-	float x;					//0x7E4
-	float y;					//0x7E8
-	float z;					//0x7EC
-} PlayerObject;
+#include "GameObjects.h"
 
 UITextView *textOutput;
 UITextView *textOutput1;
 UITextView *textOutput2;
 
-int call_count = 0;
+int callcount = 0;
 
 uint32_t ASLRslide = 0;
 NSString *binary;
 uintptr_t origPlayerInit = 0x501D29;
 uintptr_t healthWriteOrig = 0x4A89F5;
 
-PlayerObject *PlayerObj;
+Player *PlayerObj0 = NULL;
+Player *PlayerObj1 = NULL;	// Main Player object
+							// Player object pointer at 0xB0DF84
+Player *PlayerObj2 = NULL;
+
 vm_address_t address;
 BOOL textOutput2Visible;
 int i = 0;
@@ -52,6 +28,8 @@ size_t size = 192;
 void playerInitHook();
 void playerHealthWriteHook();
 void healthWriteHook();
+
+void (*origPlayerObject)();
 
 @interface MemoryEdit: NSObject <UIAlertViewDelegate, UITextViewDelegate> {
 	UIAlertView *memoryEditAlert;
@@ -81,7 +59,7 @@ void healthWriteHook();
 
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Read" message:[NSString stringWithFormat:@"%s\n0x%X: %s\nASLR slide: 0x%X", protstr, addr, readdata, ASLRslide] delegate:self cancelButtonTitle:@"Done" otherButtonTitles:nil];
 	[alert show];
-	[alert release];
+	//[alert release];
 	free(protstr);
 	free(readdata);
 }
@@ -139,7 +117,7 @@ void healthWriteHook();
 
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Write" message:msg delegate:self cancelButtonTitle:@"Done" otherButtonTitles:nil];
 	[alert show];
-	[alert release];
+	//[alert release];
 	free(protstr);
 	free(origdata);
 }
@@ -159,8 +137,12 @@ void healthWriteHook();
 }
 
 -(void)showMemoryEdit {
+	PlayerObj1 = *((Player **)0xB0DF84);
 	[[[UIApplication sharedApplication] keyWindow] addSubview:memoryEditView];
 	keyWindow = [[UIApplication sharedApplication] keyWindow];
+	[self printText:[NSString stringWithFormat:@"PlayerObj0 pointer @ %p\n", PlayerObj0] withTextView:textOutput];
+	[self printText:[NSString stringWithFormat:@"PlayerObj1 pointer @ %p\n", PlayerObj1] withTextView:textOutput];
+	[self printText:[NSString stringWithFormat:@"PlayerObj2 pointer @ %p\n", PlayerObj2] withTextView:textOutput];	
 }
 
 -(void)hideMemoryEdit {
@@ -192,11 +174,11 @@ void healthWriteHook();
 -(void)moreInfo {
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:[NSString stringWithFormat:@"Executable: %@\nASLR slide: 0x%X", binary, ASLRslide] delegate:self cancelButtonTitle:@"Done" otherButtonTitles:nil];
 	[alert show];
-	[alert release];
+	//[alert release];
 }
 
 -(void)memoryEditInit:(CGFloat)textOutputMaxHeight {
-	memoryEditView = [[[UIView alloc] initWithFrame:CGRectMake(60, 50, 144, 42)] autorelease];
+	memoryEditView = /*[*/[[UIView alloc] initWithFrame:CGRectMake(60, 50, 144, 42)] /*autorelease]*/;
 	memoryEditView.backgroundColor = [UIColor blackColor];
 	memoryEditView.layer.cornerRadius = 10;
 
@@ -265,17 +247,15 @@ MemoryEdit *memoryEditClass;
 %hook EAGLView
 
 - (void)touchesEnded:(id)fp8 withEvent:(id)fp12 {
-	if (PlayerObj != NULL){
-		if (PlayerObj->CharObj != NULL) {
-			PlayerObj->CharObj->health = 0;
-		}
+	if (PlayerObj1 != NULL){
 		[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"%p X: %f\n%p Y: %f\n%p Z: %f\n%p X: %f\n%p Y: %f\n%p Z: %f\n", 
-		&(PlayerObj->position0->x), PlayerObj->position0->x, 
-		&(PlayerObj->position0->y), PlayerObj->position0->y, 
-		&(PlayerObj->position0->z), PlayerObj->position0->z, 
-		&(PlayerObj->position1->x), PlayerObj->position1->x, 
-		&(PlayerObj->position1->y), PlayerObj->position1->y, 
-		&(PlayerObj->position1->z), PlayerObj->position1->z] withTextView:textOutput1];
+		&(PlayerObj1->position0->x), PlayerObj1->position0->x, 
+		&(PlayerObj1->position0->y), PlayerObj1->position0->y, 
+		&(PlayerObj1->position0->z), PlayerObj1->position0->z, 
+		&(PlayerObj1->position1->x), PlayerObj1->position1->x, 
+		&(PlayerObj1->position1->y), PlayerObj1->position1->y, 
+		&(PlayerObj1->position1->z), PlayerObj1->position1->z] withTextView:textOutput1];
+		//[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"health: %d\nmaxHealth: %d", PlayerObj1->health, PlayerObj1->maxHealth] withTextView:textOutput1];
 	}
 	if (textOutput2Visible) {
 		vm_read_overwrite(mach_task_self(), address, size, (vm_address_t)&buf, (vm_size_t *)&size);
@@ -288,17 +268,15 @@ MemoryEdit *memoryEditClass;
 }
 
 - (void)touchesMoved:(id)fp8 withEvent:(id)fp12 {
-	if (PlayerObj != NULL){
-		if (PlayerObj->CharObj != NULL) {
-			PlayerObj->CharObj->health = 0;
-		}
+	if (PlayerObj1 != NULL){
 		[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"%p X: %f\n%p Y: %f\n%p Z: %f\n%p X: %f\n%p Y: %f\n%p Z: %f\n", 
-		&(PlayerObj->position0->x), PlayerObj->position0->x, 
-		&(PlayerObj->position0->y), PlayerObj->position0->y, 
-		&(PlayerObj->position0->z), PlayerObj->position0->z, 
-		&(PlayerObj->position1->x), PlayerObj->position1->x, 
-		&(PlayerObj->position1->y), PlayerObj->position1->y, 
-		&(PlayerObj->position1->z), PlayerObj->position1->z] withTextView:textOutput1];
+		&(PlayerObj1->position0->x), PlayerObj1->position0->x, 
+		&(PlayerObj1->position0->y), PlayerObj1->position0->y, 
+		&(PlayerObj1->position0->z), PlayerObj1->position0->z, 
+		&(PlayerObj1->position1->x), PlayerObj1->position1->x, 
+		&(PlayerObj1->position1->y), PlayerObj1->position1->y, 
+		&(PlayerObj1->position1->z), PlayerObj1->position1->z] withTextView:textOutput1];
+		//[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"health: %d\nmaxHealth: %d", PlayerObj1->health, PlayerObj1->maxHealth] withTextView:textOutput1];
 	}
 	if (textOutput2Visible) {
 		vm_read_overwrite(mach_task_self(), address, size, (vm_address_t)&buf, (vm_size_t *)&size);
@@ -311,17 +289,15 @@ MemoryEdit *memoryEditClass;
 }
 
 - (void)touchesBegan:(id)fp8 withEvent:(id)fp12 {
-	if (PlayerObj != NULL){
-		if (PlayerObj->CharObj != NULL) {
-			PlayerObj->CharObj->health = 0;
-		}
+	if (PlayerObj1 != NULL){
 		[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"%p X: %f\n%p Y: %f\n%p Z: %f\n%p X: %f\n%p Y: %f\n%p Z: %f\n", 
-		&(PlayerObj->position0->x), PlayerObj->position0->x, 
-		&(PlayerObj->position0->y), PlayerObj->position0->y, 
-		&(PlayerObj->position0->z), PlayerObj->position0->z, 
-		&(PlayerObj->position1->x), PlayerObj->position1->x, 
-		&(PlayerObj->position1->y), PlayerObj->position1->y, 
-		&(PlayerObj->position1->z), PlayerObj->position1->z] withTextView:textOutput1];
+		&(PlayerObj1->position0->x), PlayerObj1->position0->x, 
+		&(PlayerObj1->position0->y), PlayerObj1->position0->y, 
+		&(PlayerObj1->position0->z), PlayerObj1->position0->z, 
+		&(PlayerObj1->position1->x), PlayerObj1->position1->x, 
+		&(PlayerObj1->position1->y), PlayerObj1->position1->y, 
+		&(PlayerObj1->position1->z), PlayerObj1->position1->z] withTextView:textOutput1];
+		//[memoryEditClass printTextOverwrite:[NSString stringWithFormat:@"health: %d\nmaxHealth: %d", PlayerObj1->health, PlayerObj1->maxHealth] withTextView:textOutput1];
 	}
 	if (textOutput2Visible) {
 		vm_read_overwrite(mach_task_self(), address, size, (vm_address_t)&buf, (vm_size_t *)&size);
@@ -335,45 +311,36 @@ MemoryEdit *memoryEditClass;
 
 %end
 
-__attribute__((naked, optnone)) void playerInitHook() {
-	asm volatile("push {r2}");
-	asm volatile("mov r2, 0x24f4");
-	asm volatile("add r2, pc");
-	asm volatile("ldr r1, [r2]");
-	asm volatile("add r1, r1, #1");
-	asm volatile("str r1, [r2]");
-	asm volatile("cmp r1, #2");
-	asm volatile("ittt ne");
-	asm volatile("ldr r1, [pc, #24]");
-	asm volatile("pop {r2}");
-	asm volatile("bx r1");
-	asm volatile("mov r2, 0x24e8");
-	asm volatile("add r2, pc");
-	asm volatile("str r0, [r2]");
-	asm volatile("ldr r1, [pc, #8]");
-	asm volatile("mov r2, #1");
-	asm volatile("cmp r2, #3");
-	asm volatile("pop {r2}");
-	asm volatile("bx r1");
-	asm volatile(".word 0x501D29");
-	asm volatile("nop");
-	asm volatile("nop");
-	asm volatile("nop");
+void playerObjectHook() __attribute__ ((optnone)){
+	asm volatile("push {r0-r11,lr}");
+	//asm volatile("sub r0, r0, #4"); // Subtract 4 to get exact address.
+	asm volatile("mov r11, r0");
+	asm volatile("mov r12, %0"::"r" (origPlayerObject));
+	asm volatile("mov r1, %0"::"r" (&PlayerObj0));
+	asm volatile("mov r2, %0"::"r" (&PlayerObj1)); // Main PlayerObject
+	asm volatile("mov r3, %0"::"r" (&PlayerObj2));
+	asm volatile("mov r4, %0"::"r" (&callcount));
+	asm volatile("ldr r0, [r4]");
+	asm volatile("add r0, r0, #1");
+	asm volatile("str r0, [r4]");
+	asm volatile("cmp r0, #2");
+	asm volatile("it lt");
+	asm volatile("str r11, [r1]");
+	asm volatile("it eq");
+	asm volatile("str r11, [r2]");
+	asm volatile("it gt");
+	asm volatile("str r11, [r3]");
+	asm volatile("pop {r0-r11,lr}");
+	asm volatile("bx r12");
 }
 
-//PlayerObject + 0x58C: Health
-//PlayerObject + 0x590: Health
-//PlayerObject + 0x7E4: X-coordinate
-//PlayerObject + 0x7E8: Y-coordinate
-//PlayerObject + 0x7EC: Z-coordinate
 %ctor {
 	CGFloat h = 100;
 	binary = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"];
+	//NSString *logfile = [NSString stringWithFormat:@"/var/mobile/%@-stdout.log", binary];
 	ASLRslide = getSlide([binary UTF8String]);
+	//freopen([logfile UTF8String], "w", stdout);
+	//MSHookFunction((void *)0x501D29, (void *)playerObjectHook, (void **)&origPlayerObject);
 	memoryEditClass = [[%c(MemoryEdit) alloc] init];
 	[memoryEditClass memoryEditInit:h];
-	[memoryEditClass printText:[NSString stringWithFormat:@"PlayerObj pointer @ %p\n", &PlayerObj] withTextView:textOutput];
-	detour_w((void *)0x501D24, (void *)playerInitHook);
-	//detour((void *)0x474FAE, (void *)playerInitHook);
-	
 }

@@ -1,3 +1,6 @@
+#ifndef MEMORYEDIT_H_
+#define MEMORYEDIT_H_
+
 #import <Foundation/Foundation.h>
 #import <mach/mach_traps.h>
 #import <mach-o/dyld.h>
@@ -104,7 +107,7 @@ char* readMemory(vm_address_t address, size_t size){
  */
 
 
-bool writeMemory(vm_address_t address,  string str) {
+bool writeMemory(vm_address_t address, string str) {
     
     //declaring variables
     
@@ -136,8 +139,7 @@ bool writeMemory(vm_address_t address,  string str) {
 		x++;
 	}
 
-	if (!getRegionInfo(address, &info))
-		return FALSE;
+	if (!getRegionInfo(address, &info)) return FALSE;
 
 //printf("info\n");
     //set memory protections to allow us writing code there
@@ -147,15 +149,13 @@ bool writeMemory(vm_address_t address,  string str) {
     
     //check if the protection fails
     
-	if (err != KERN_SUCCESS)
-		return FALSE;
+	if (err != KERN_SUCCESS) return FALSE;
     
     //write code to memory
     //printf("%s\n", infoProtectionLevel(address));
 	err = vm_write(port,address,(vm_address_t)&data,sizeof(data));
     //printf("vm_write\n");
-	if (err != KERN_SUCCESS)
-		return FALSE;
+	if (err != KERN_SUCCESS) return FALSE;
     
     /* Flush CPU data cache to save write to RAM - Thanks to c0deh4cker*/
 	sys_dcache_flush((void *)address, sizeof(data));
@@ -167,8 +167,7 @@ bool writeMemory(vm_address_t address,  string str) {
     
 	err = vm_protect(port, (vm_address_t)address, sizeof(data), NO, info.protection);
 //printf("vm_protect to normal\n");
-	if (err != KERN_SUCCESS)
-		return FALSE;
+	if (err != KERN_SUCCESS) return FALSE;
     
 	return TRUE;
 	
@@ -182,8 +181,7 @@ bool writeData(vm_address_t address, vm_address_t data, size_t size) {
     mach_port_t port = mach_task_self();
     vm_region_basic_info_data_t info;
 
-    if (!getRegionInfo(address, &info))
-        return FALSE;
+    if (!getRegionInfo(address, &info)) return FALSE;
 
 //printf("info\n");
     //set memory protections to allow us writing code there
@@ -193,15 +191,13 @@ bool writeData(vm_address_t address, vm_address_t data, size_t size) {
     
     //check if the protection fails
     
-    if (err != KERN_SUCCESS)
-        return FALSE;
+    if (err != KERN_SUCCESS) return FALSE;
     
     //write code to memory
     //printf("%s\n", infoProtectionLevel(address));
-    err = vm_write(port , address, data, size);
+    err = vm_write(port, address, data, size);
     //printf("vm_write\n");
-    if (err != KERN_SUCCESS)
-        return FALSE;
+    if (err != KERN_SUCCESS) return FALSE;
     
     /* Flush CPU data cache to save write to RAM - Thanks to c0deh4cker*/
 	sys_dcache_flush((void *)address, size);
@@ -213,9 +209,9 @@ bool writeData(vm_address_t address, vm_address_t data, size_t size) {
     
     err = vm_protect(port, address, size, NO, info.protection);
 //printf("vm_protect to normal\n");
-    if (err != KERN_SUCCESS)
-        return FALSE;
+    if (err != KERN_SUCCESS) return FALSE;
     
     return TRUE;
 	
 }
+#endif

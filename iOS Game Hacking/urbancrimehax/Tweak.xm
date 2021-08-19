@@ -1,4 +1,4 @@
-#include "aslrwrite.h"
+#include <aslrwrite.h>
 
 @interface gliveViewController
 	-(void)showAlertWithTitle:(NSString *)title andMessage:(NSString *)message;
@@ -18,6 +18,10 @@ UISwitch *damageSwitch;
 UISwitch *setToZero;
 UIView *cheatMenu;
 static bool isCalled = false;
+void *PlayerObject0;
+void *PlayerObject1; // Main PlayerObject 
+					 // PlayerObject pointer at 0xB0DF84
+void *PlayerObject2;
 
 #include "hooks.h"
 
@@ -119,6 +123,24 @@ static bool isCalled = false;
 	damageLabel.textColor = [UIColor whiteColor];
 	damageLabel.textAlignment = UITextAlignmentLeft;
 	
+	UILabel *playerObject0Label = [[UILabel alloc] initWithFrame:CGRectMake(20, 300, 300, 31)];
+	playerObject0Label.text = [NSString stringWithFormat:@"PlayerObject0: %p", PlayerObject0];
+	playerObject0Label.backgroundColor = [UIColor clearColor];
+	playerObject0Label.textColor = [UIColor whiteColor];
+	playerObject0Label.textAlignment = UITextAlignmentLeft;
+	
+	UILabel *playerObject1Label = [[UILabel alloc] initWithFrame:CGRectMake(20, 350, 300, 31)];
+	playerObject1Label.text = [NSString stringWithFormat:@"PlayerObject1: %p (main)", PlayerObject1];
+	playerObject1Label.backgroundColor = [UIColor clearColor];
+	playerObject1Label.textColor = [UIColor whiteColor];
+	playerObject1Label.textAlignment = UITextAlignmentLeft;
+	
+	UILabel *playerObject2Label = [[UILabel alloc] initWithFrame:CGRectMake(20, 400, 300, 31)];
+	playerObject2Label.text = [NSString stringWithFormat:@"PlayerObject2: %p", PlayerObject2];
+	playerObject2Label.backgroundColor = [UIColor clearColor];
+	playerObject2Label.textColor = [UIColor whiteColor];
+	playerObject2Label.textAlignment = UITextAlignmentLeft;
+	
 	setToZero = [[UISwitch alloc] initWithFrame:CGRectMake(250, 500, 0, 0)];
 	[setToZero setOn:NO animated:YES];
 	[setToZero addTarget:self action:@selector(magZero) forControlEvents:UIControlEventValueChanged];
@@ -134,6 +156,9 @@ static bool isCalled = false;
 	[cheatMenu addSubview:healthLabel];
 	[cheatMenu addSubview:damageSwitch];
 	[cheatMenu addSubview:damageLabel];
+	[cheatMenu addSubview:playerObject0Label];
+	[cheatMenu addSubview:playerObject1Label];
+	[cheatMenu addSubview:playerObject2Label];
 	[cheatMenu addSubview:setToZero];
 	[cheatMenu addSubview:exitButton];
 	[weaponMagSwitch release];
@@ -249,5 +274,6 @@ label.text = @"showHTTPErrorConnection";
 	//MSHookFunction((void *)0x48A2F1, (void *)replace_48A2F0, (void **)&sub_48A2F0);
 	MSHookFunction((void *)0x4B1339, (void *)replace_4B1338, (void **)&sub_4B1338);
 	MSHookFunction((void *)0x47D723, (void *)hackDamage, (void **)&origDamage);
+	MSHookFunction((void *)0x476241, (void *)playerObjectSubroutineHook, (void **)&origPlayerObjectSubroutine);
 }
 #endif

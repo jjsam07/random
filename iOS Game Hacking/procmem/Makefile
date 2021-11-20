@@ -14,3 +14,4 @@ procmem_INSTALL_PATH = /usr/local/bin
 procmem_LDFLAGS = -lncurses
 
 include $(THEOS_MAKE_PATH)/tool.mk
+include $(THEOS_MAKE_PATH)/tweak.mk

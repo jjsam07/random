@@ -3,6 +3,10 @@
 #include <ncurses.h>
 #include <mach/mach.h>
 
+#ifndef REFRESH_MICROSECOND
+#define REFRESH_MICROSECOND 250000
+#endif
+
 #ifndef __BOOL_DEBUG
 #define __BOOL_DEBUG
 extern bool debug;
@@ -31,6 +35,7 @@ void procmem_read_float(mach_port_t task, vm_address_t address, void *buffer, si
 void procmem_read_double(mach_port_t task, vm_address_t address, void *buffer, size_t size);
 void procmem_read_boolean(mach_port_t task, vm_address_t address, void *buffer, size_t size);
 void procmem_read_ascii(mach_port_t task, vm_address_t address, void *buffer, size_t size);
+int ch;
 
 void procmem_read(mach_port_t task, vm_address_t address, size_t size, procmem_rw_mode mode) {
 	void *buffer = NULL;
@@ -88,7 +93,6 @@ void procmem_read(mach_port_t task, vm_address_t address, size_t size, procmem_r
 			printf("Invalid read mode,\n");
 			break;
 	}
-	free(buffer);
 }
 
 void procmem_read_hex_raw(mach_port_t task, vm_address_t address, void *buffer, size_t size) {
@@ -99,6 +103,7 @@ void procmem_read_hex_raw(mach_port_t task, vm_address_t address, void *buffer, 
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -121,8 +126,10 @@ void procmem_read_hex_raw(mach_port_t task, vm_address_t address, void *buffer, 
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -135,6 +142,7 @@ void procmem_read_hex_int(mach_port_t task, vm_address_t address, void *buffer, 
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -154,8 +162,10 @@ void procmem_read_hex_int(mach_port_t task, vm_address_t address, void *buffer, 
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -168,6 +178,7 @@ void procmem_read_signed_int(mach_port_t task, vm_address_t address, void *buffe
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -187,8 +198,10 @@ void procmem_read_signed_int(mach_port_t task, vm_address_t address, void *buffe
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -201,6 +214,7 @@ void procmem_read_unsigned_int(mach_port_t task, vm_address_t address, void *buf
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -220,8 +234,10 @@ void procmem_read_unsigned_int(mach_port_t task, vm_address_t address, void *buf
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -234,6 +250,7 @@ void procmem_read_float(mach_port_t task, vm_address_t address, void *buffer, si
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -248,8 +265,10 @@ void procmem_read_float(mach_port_t task, vm_address_t address, void *buffer, si
 			printw("0x%X: %f\n", address+(i*sizeof(float)), ((float *)buffer)[i]); // ncurses
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -262,6 +281,7 @@ void procmem_read_double(mach_port_t task, vm_address_t address, void *buffer, s
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -276,8 +296,10 @@ void procmem_read_double(mach_port_t task, vm_address_t address, void *buffer, s
 			printw("0x%X: %lf\n", address+(i*sizeof(double)), ((double *)buffer)[i]); // ncurses
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -290,6 +312,7 @@ void procmem_read_boolean(mach_port_t task, vm_address_t address, void *buffer, 
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -309,8 +332,10 @@ void procmem_read_boolean(mach_port_t task, vm_address_t address, void *buffer, 
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }
@@ -323,6 +348,7 @@ void procmem_read_ascii(mach_port_t task, vm_address_t address, void *buffer, si
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	while(1) {
 		res = vm_read_overwrite(task, address, size, (vm_address_t)buffer, (vm_size_t *)&size);
 		/**** START DEBUG OUTPUT ****/
@@ -345,8 +371,10 @@ void procmem_read_ascii(mach_port_t task, vm_address_t address, void *buffer, si
 			}
 		}
 		refresh();
-		usleep(250);
+		usleep(REFRESH_MICROSECOND);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	endwin();
 }

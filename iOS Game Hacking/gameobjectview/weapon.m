@@ -16,7 +16,6 @@ pid_t get_pid_by_name(char *process_name) {
 
 	int sysctl_mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
 	
-	
 	sysctl_status = sysctl(sysctl_mib, 4, NULL, &sysctl_size, NULL, 0);
 	process_list = malloc(sysctl_size);
 	sysctl_status = sysctl(sysctl_mib, 4, process_list, &sysctl_size, NULL, 0);
@@ -40,6 +39,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	mach_port_t task;
 	vm_size_t size;
 	procmem_rw_mode read_mode = _RW_MODE_NULL;
+	int ch;
 	
 	if (argc < 2) return 0;
 	
@@ -107,8 +107,10 @@ int main(int argc, char *argv[], char *envp[]) {
 	initscr();
 	cbreak();
 	noecho();
+	nodelay(stdscr, TRUE);
 	
 	while(1) {
+		
 		size = 4;
 		res = vm_read_overwrite(task, ((vm_address_t)inventory_ptr)+0xA4, size, (vm_address_t)&weapon_type, &size);
 		if (res != KERN_SUCCESS) {
@@ -117,21 +119,25 @@ int main(int argc, char *argv[], char *envp[]) {
 		}
 		
 		size = 0xAC;
-		res = vm_read_overwrite(task, (vm_address_t)inventory->weapon[weapon_type], size, (vm_address_t)weapon, &size);
+		res = vm_read_overwrite(task, (vm_address_t)inventory->weapons[weapon_type], size, (vm_address_t)weapon, &size);
 		if (res != KERN_SUCCESS) {
 			printf("weapon: vm_read_overwrite: %s\n", mach_error_string(res));
 			return 0;
 		}
 		
-		printw("current weapon: %s\nweapon index: %d\nweapon clip: %d\n\n", weapon_name[weapon_type], weapon_type, weapon->weapon_clip);
-		procmem_read((vm_address_t)inventory->weapon[weapon_type], (void *)weapon, 0xAC, read_mode);
+		printw("current weapon: %s\nweapon index: %d\nweapon clip: %d\nweapon damage: %d\nammo: %s\nammo index: %d\n\n", weapon_name[weapon->weapon_type], weapon->weapon_type, weapon->weapon_clip, weapon->damage, (weapon->ammo_type >= 0) ? ammo_name[weapon->ammo_type] : "NONE", weapon->ammo_type);
+		procmem_read((vm_address_t)inventory->weapons[weapon_type], (void *)weapon, 0xAC, read_mode);
 		
 		refresh();
-		usleep(250);
+		usleep(250000);
 		clear();
+		ch = getch();
+		if (ch == '\n') break;
 	}
 	
 	endwin();
+	free(weapon);
+	free(inventory);
 	
 	return 0;
 }

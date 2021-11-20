@@ -26,6 +26,17 @@ void procmem_lock(mach_port_t task, vm_address_t address, size_t size) {
 		printf("vm_read_overwrite: Read error: %s\n", mach_error_string(res));
 		exit(0);
 	}
+	
+	/**** START DEBUG OUTPUT ****/
+	if (debug) {
+		printf("Lock\nprocmem_lock: Address: 0x%X\nprocmem_lock: Size: %lu\nBuffer: %p\nData: ", address, size, buffer);
+		for(int i = 0; i < size; i++) {
+			printf("%hhX ", buffer[i]);
+		}
+		puts("");
+	}
+	/***** END DEBUG OUTPUT *****/
+	
 	while(1) {
 		vm_write(task, address, (vm_address_t)buffer, size);
 		if (res != KERN_SUCCESS) {

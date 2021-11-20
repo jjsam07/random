@@ -1,3 +1,19 @@
+const char *ammo_name[] = {
+	"Pistol Ammo",
+	"AK-47 Ammo",
+	"Crossbow Ammo",
+	"Shotgun Ammo",
+	"SMG Ammo",
+	"RPG Ammo",
+	"Grenade Ammo",
+	"Molotov Ammo",
+	"Sniper Ammo",
+	"UNKNOWN_UNUSEDAmmo",
+	"Flamethrower Ammo",
+	"Gatling Ammo",
+	"Grenade Launcher Ammo"
+};
+
 typedef enum {
 	PistolAmmo,
 	AK47Ammo,
@@ -14,7 +30,7 @@ typedef enum {
 	GrenadeLauncherAmmo
 } AmmoTypes;
 
-char *weapon_name[] = {
+const char *weapon_name[] = {
 	"UNUSED",
 	"Bare Knuckles",
 	"Baseball Bat",
@@ -88,18 +104,29 @@ typedef struct {
 } Weapon;
 
 typedef struct {
-	Weapon *weapon[28];
+	Weapon *weapons[28];
 	int weapon_ammo[13];
 	int weapon_type;
 	int zero;
 } WeaponInventory;
 
 typedef struct {
-	char padding0[0x40];	//0x0
+	void *vtable;			//0x0
+	char padding0[0x3C];	//0x4
+	float XYZ_0[3];			//0x40
+	char padding1[0x38];	//0x4C
+	float XYZ_1[3];			//0x84
+	char padding[8];		//0x90
+	float XYZ_2[3];			//0x98
+} PlayerPosition0;
+
+typedef struct {
+	void *vtable;			//0x0
+	char padding0[0x3C];	//0x4
 	float x;				//0x40
 	float y;				//0x44
 	float z;				//0x48
-} PlayerPosition;
+} PlayerPosition1;
 
 typedef struct {
 	char padding0[0x58C];
@@ -110,29 +137,31 @@ typedef struct {
 	void			*vtable0;					//0x0
 	void			*vtable1;					//0x4
 	char			padding0[0xC];	//padding	//0x8
-	PlayerPosition	*position0;					//0x14
+	PlayerPosition0	*position0;					//0x14
 	char			padding1[0x2E0];//padding	//0x18
-	PlayerPosition	*position1; 				//0x2F8
+	PlayerPosition1	*position1; 				//0x2F8
 	char			padding2[0x28];	//padding	//0x2FC
 	float			playerVelocity0;			//0x324
 	char			padding3[0x1C];	//padding	//0x328
 	float			playerVelocity1;			//0x344
 	char			padding4[0x170];//padding	//0x348
-	bool			isPlayerTargeting;			//0x4B8
+	int				isPlayerTargeting;			//0x4B8
 	char			padding5[0x60];	//padding	//0x4BC
 	float			cameraX;					//0x51C
 	float			cameraY;					//0x520
 	float			cameraZ;					//0x524
-	char			padding6[0x64]; //padding	//0x528
+	char			padding6[0x44]; //padding	//0x528
+	void			*VehicleObject;				//0x56C
+	char			padding13[0x1C];//padding	//0x570
 	int				maxHealth; 					//0x58C
 	int				health; 					//0x590
 	char			padding7[0x8];	//padding	//0x594
-	bool			isPlayerMoving;				//0x59C
+	int				isPlayerMoving;				//0x59C
 	char			padding8[0xC8]; //padding	//0x5A0
-	Character		*Char;						//0x668 //Target's Object
+	void			*playerTarget;				//0x668 //Target's Object
 	char			padding9[0xCC];	//padding	//0x66C
 	float			dpadDirection;				//0x738
-	bool			canSprint;					//0x73C
+	int				canSprint;					//0x73C
 	char			padding10[0x88];//padding	//0x740
 	int				distanceTravelledOnFoot;	//0x7C8
 	int				distanceTravelledOnVehicle;	//0x7CC

@@ -178,7 +178,7 @@ void write_flash() {
 void loop() {
   if (Serial.available()) {
     Serial.readBytes(input, 7);
-    if (input[0] == 0) { //Mode 0: Continuous read. usage: bytearray([COMMAND (0), IGNORE, IGNORE, IGNORE, IGNORE, IGNORE, SPISETTING])
+    if (input[0] == 0) { //Mode 0: Continuous read. usage: bytearray([MODE, IGNORE, IGNORE, IGNORE, IGNORE, IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -206,7 +206,7 @@ void loop() {
       }
       digitalWrite(10, HIGH);
       SPI.endTransaction(); // End Mode 0
-    } else if (input[0] == 1) { //Mode 1: Byte-by-byte read. usage: bytearray([COMMAND (1), READ_SIZE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, SPISETTING])
+    } else if (input[0] == 1) { //Mode 1: Byte-by-byte read. usage: bytearray([MODE, READ_SIZE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -252,7 +252,7 @@ void loop() {
         Serial.write(tempbuffer);
       }
       SPI.endTransaction(); // End Mode 1
-    } else if (input[0] == 2) { // Mode 2: Custom command. usage: bytearray([COMMAND (2), SPI_COMMAND, SPI_BYTE0, SPI_BYTE1, SPI_BYTE2, SPI_BYTE3, SPISETTING])
+    } else if (input[0] == 2) { // Mode 2: Custom command. usage: bytearray([MODE, SPI_COMMAND, SPI_BYTE0, SPI_BYTE1, SPI_BYTE2, SPI_BYTE3, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -309,7 +309,7 @@ void loop() {
         Serial.write(0xDE);
       }
       SPI.endTransaction(); // End Mode 2
-    } else if (input[0] == 3) { // Mode 3: Page program. usage: bytearray([COMMAND (3), ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, NO_VERIFY, WRITE_SIZE, SPISETTING])
+    } else if (input[0] == 3) { // Mode 3: Page program. usage: bytearray([MODE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, NO_VERIFY, WRITE_SIZE, SPISETTING])
       if (input[4] == 0) {
         receive_input();
         Serial.write(page_chunk0, 64);
@@ -334,7 +334,7 @@ void loop() {
         write_flash();
       }
     } // End Mode 3
-    else if (input[0] == 4) { // Mode 4: Byte write. usage: bytearray([COMMAND (4), ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, DATA, IGNORE, SPISETTING])
+    else if (input[0] == 4) { // Mode 4: Byte write. usage: bytearray([MODE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, DATA, IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -373,7 +373,7 @@ void loop() {
         Serial.println("Cannot write to flash");
         SPI.endTransaction();
       }
-    } else if (input[0] == 5) { // Mode 5: Sector Erase. usage: bytearray([COMMAND (5), ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, IGNORE, SPISETTING])
+    } else if (input[0] == 5) { // Mode 5: Sector Erase. usage: bytearray([MODE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -411,7 +411,7 @@ void loop() {
         Serial.println("Cannot erase sector");
         SPI.endTransaction();
       }
-    } else if (input[0] == 6) { // Mode 6: Block Erase. usage: bytearray([COMMAND (6), ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, IGNORE, SPISETTING])
+    } else if (input[0] == 6) { // Mode 6: Block Erase. usage: bytearray([MODE, ADDR_UPPER, ADDR_MIDDLE, ADDR_LOWER, IGNORE, IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);

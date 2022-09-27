@@ -28,7 +28,7 @@ void setup() {
   pinMode(10, OUTPUT);
 }
 
-unsigned long flashsize = 0x800000;
+unsigned long flashsize = 0x0;
 unsigned char input[7] = {};
 unsigned char tempbuffer = 0;
 unsigned char temp = 0;
@@ -178,7 +178,7 @@ void write_flash() {
 void loop() {
   if (Serial.available()) {
     Serial.readBytes(input, 7);
-    if (input[0] == 0) { //Mode 0: Continuous read. usage: bytearray([MODE, IGNORE, IGNORE, IGNORE, IGNORE, IGNORE, SPISETTING])
+    if (input[0] == 0) { //Mode 0: Read entire flash. Continuous read. usage: bytearray([MODE, FLASH_SIZE[31:24], FLASH_SIZE[23:16], FLASH_SIZE[15:8], FLASH_SIZE[7:0], IGNORE, SPISETTING])
       switch (input[6]) {
         case 0:
           SPI.beginTransaction(settingsA);
@@ -200,6 +200,8 @@ void loop() {
       SPI.transfer(0);
       SPI.transfer(0);
       SPI.transfer(0);
+      flashsize = 0x0;
+      flashsize = (input[1] << 24) | (input[2] << 16) | (input[3] << 8) | (input[4]);
       for (unsigned long i = 0; i < flashsize; i++) {
         tempbuffer = SPI.transfer(0);
         Serial.write(tempbuffer);
